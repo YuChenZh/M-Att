@@ -1,0 +1,88 @@
+----------
+Accuracy*:         0.96
+Sensitivity (TPR): 0.65
+Specificity (TNR): 0.99
+Balanced accuracy: 0.82
+----------
+
+----------
+Accuracy*:         0.92
+Sensitivity (TPR): 0.35
+Specificity (TNR): 0.98
+Balanced accuracy: 0.66
+----------
+
+----------
+Accuracy*:         0.91
+Sensitivity (TPR): 0.00
+Specificity (TNR): 0.91
+Balanced accuracy: 0.45
+----------
+
+----------
+Accuracy*:         0.93
+Sensitivity (TPR): 0.33
+Specificity (TNR): 0.99
+Balanced accuracy: 0.66
+----------
+
+----------
+Accuracy*:         0.89
+Sensitivity (TPR): 0.13
+Specificity (TNR): 0.97
+Balanced accuracy: 0.55
+----------
+
+----------
+Accuracy*:         0.94
+Sensitivity (TPR): 0.01
+Specificity (TNR): 1.00
+Balanced accuracy: 0.51
+----------
+
+----------
+Accuracy*:         0.91
+Sensitivity (TPR): 0.00
+Specificity (TNR): 0.96
+Balanced accuracy: 0.48
+----------
+
+
+----------
+Accuracy*:         0.88
+Sensitivity (TPR): 0.00
+Specificity (TNR): 0.96
+Balanced accuracy: 0.48
+----------
+
+
+----------
+Accuracy*:         0.96
+Sensitivity (TPR): 0.50
+Specificity (TNR): 0.99
+Balanced accuracy: 0.74
+----------
+
+----------
+Accuracy*:         0.91
+Sensitivity (TPR): 0.12
+Specificity (TNR): 0.95
+Balanced accuracy: 0.53
+----------
+
+----------
+Accuracy*:         0.84
+Sensitivity (TPR): 0.23
+Specificity (TNR): 0.90
+Balanced accuracy: 0.57
+----------
+
+----------
+Accuracy*:         0.92
+Sensitivity (TPR): 0.57
+Specificity (TNR): 0.95
+Balanced accuracy: 0.76
+----------
+
+tpr: 2.89  0.24
+bacc: 7.21  0.6

@@ -1,0 +1,72 @@
+task_num:6
+con_layer1:128
+con_layer1_filter:8
+con_layer2:64
+con_layer2_filter:4
+lstm_layer:64
+drop:0.2
+r_drop:0.2
+l2_value:0.001
+shared_layer:576
+dense_num:64
+Accuracy: 0.9015212981744422 TPR: 0.9351145038167938 TNR: 0.8999646268128758 Bacc: 0.9175395653148348
+Accuracy: 0.9156186612576065 TPR: 0.6853211009174311 TNR: 0.9339416058394161 Bacc: 0.8096313533784236
+Accuracy: 0.8574036511156187 TPR: 0.6973751930005146 TNR: 0.8686543401961139 Bacc: 0.7830147665983143
+Accuracy: 0.8828262339418526 TPR: 0.9910863509749304 TNR: 0.8758322836062624 Bacc: 0.9334593172905964
+Accuracy: 0.8934077079107505 TPR: 0.7717454757734968 TNR: 0.9008863530340546 Bacc: 0.8363159144037757
+Accuracy: 0.9086206896551724 TPR: 0.5787490580256217 TNR: 0.9411349624897868 Bacc: 0.7599420102577042
+sum_bacc: 5.0399029272436495
+sum_TPR: 4.659391682508789
+
+
+
+def attention_3d_block(shared,inputs):
+    # inputs.shape = (batch_size, time_steps, input_dim)
+    input_dim = int(inputs.shape[2])
+    activation_weights= Flatten()(shared)
+    activation_weights=Dense(TIME_STEPS,activation='tanh')(activation_weights)
+    activation_weights=Activation('softmax')(activation_weights)
+    activation_weights= RepeatVector(input_dim)(activation_weights)
+    activation_weights=Permute([2,1])(activation_weights)
+    activation_weighted=merge([inputs,activation_weights], mode = 'mul')
+
+    # sum_weighted = Lambda(lambda x: K.sum(x, axis=-2), output_shape=(input_dim,))(activation_weighted)
+    return activation_weighted
+
+def build_model(data1,data2,data3,data4,data5,data6,
+                task_num, con_layer1, con_layer1_filter, con_layer2, con_layer2_filter,
+                lstm_layer, drop, r_drop, l2_value, shared_layer,dense_num, n_labels):
+    """
+    Keras Function model
+    """
+
+    concate_list = []
+    input_list = []
+    for i in range(0,task_num):
+        locals()['input'+str(i)] = Input(shape=(locals()['data'+ str(i+1)].shape[1], locals()['data'+ str(i+1)].shape[2]), name='input'+str(i))
+        locals()['cnn_out'+str(i)] = Convolution1D(nb_filter=con_layer1, filter_length=con_layer1_filter, activation='relu')(locals()['input'+str(i)])
+        # locals()['cnn_out'+str(i)] = Convolution1D(nb_filter=con_layer2, filter_length=con_layer2_filter, activation='relu')(locals()['cnn_out'+str(i)])
+        locals()['lstm_out'+str(i)] = LSTM(lstm_layer, activation='relu', dropout=drop,
+                                           recurrent_dropout=r_drop,kernel_regularizer=regularizers.l2(l2_value),return_sequences=True)(locals()['input'+str(i)])
+        concate_list.append(locals()['lstm_out'+str(i)])
+        input_list.append(locals()['input'+str(i)])
+
+    concate_layer = keras.layers.concatenate(concate_list)
+
+    # lstm_shared = LSTM(shared_layer, activation='relu',dropout=drop, recurrent_dropout=r_drop,
+    #                    return_sequences=True)(concate_layer)
+
+
+    output_list = []
+    for i in range(0,task_num):
+        locals()['concate_layer'+str(i)] = attention_3d_block(concate_layer,locals()['lstm_out'+str(i)])
+        locals()['flatten_layer'+str(i)] = LSTM(dense_num,activation='relu')(locals()['concate_layer'+str(i)])
+        locals()['sub'+str(i)] = Dense(dense_num,activation='relu')(locals()['flatten_layer'+str(i)])
+        locals()['out'+str(i)] = Dense(n_labels, activation='sigmoid')(locals()['sub'+str(i)])
+        output_list.append(locals()['out'+str(i)])
+
+    model = Model(inputs=input_list,outputs=output_list)
+    adam = optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+    model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['binary_accuracy'])
+
+    return model
